@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "react-query";
 
 export type Category = {
   id: number;
@@ -38,6 +39,50 @@ export function editCategory(props: Category) {
     }),
     headers: { "Content-type": "application/json; charset=UTF-8" },
   });
+}
+
+export function categoryhooks() {
+  const useFetchCategory = useQuery("categoryData", () => {
+    return fetch(`http://localhost:3000/category`)
+      .then((result) => result.json())
+      .then((data: Category[]) => data);
+  });
+  const useCreateCategory = useMutation({
+    mutationFn: (props: CategoryRequest) => {
+      return fetch(`http://localhost:3000/category`, {
+        method: "POST",
+        body: JSON.stringify({
+          title: props.title,
+        }),
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+      });
+    },
+  });
+  const useDeleteCategory = useMutation({
+    mutationFn: (props: Category) => {
+      return fetch(`http://localhost:3000/category/` + props.id, {
+        method: "DELETE",
+      });
+    },
+  });
+  const useEditCategory = useMutation({
+    mutationFn: (props: Category) => {
+      return fetch(`http://localhost:3000/category/` + props.id, {
+        method: "PUT",
+        body: JSON.stringify({
+          id: props.id,
+          title: props.title,
+        }),
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+      });
+    },
+  });
+  return {
+    useFetchCategory,
+    useCreateCategory,
+    useDeleteCategory,
+    useEditCategory,
+  };
 }
 
 //ini namanya custom hooks
