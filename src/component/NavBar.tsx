@@ -1,24 +1,46 @@
-import { styled } from "styled-components";
 import { useProfileContext } from "../context/ProfileContext";
 import { usePageMode } from "../context/PageModeContext";
-
-const Div = styled.div`
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-`;
+import {
+  Flex,
+  Box,
+  Heading,
+  Spacer,
+  Text,
+  Stack,
+  Switch,
+} from "@chakra-ui/react";
 
 export function Navbar() {
   const { name } = useProfileContext();
   const { darkMode, setDarkMode } = usePageMode();
+  const padding = 3;
   return (
-    <Div>
-      <span>{name === "" ? `` : `Your name : ${name}`}</span>
-      <input
-        type="button"
-        value={darkMode === false ? "Dark Mode" : "White Mode"}
-        onClick={() => setDarkMode(!darkMode)}
-      />
-    </Div>
+    <>
+      <Flex borderBottom={"2px"}>
+        <Box p={padding}>
+          <Heading size="md">POS App</Heading>
+        </Box>
+        <Spacer />
+        <Box p={padding}>
+          <Text as="b" fontSize={"xl"}>
+            {name === "" ? `` : `Welcome ${name}`}
+          </Text>
+        </Box>
+        <Spacer />
+        <Box p={padding}>
+          <Stack align="center" direction="row">
+            <Switch size="md" onChange={() => setDarkMode(!darkMode)} />
+            <span> {darkMode === false ? "Dark" : "White"}</span>
+          </Stack>
+          {/* <Button
+            variant="link"
+            color={"inherit"}
+            onClick={() => setDarkMode(!darkMode)}
+          >
+            {darkMode === false ? "Dark Mode" : "White Mode"}
+          </Button> */}
+        </Box>
+      </Flex>
+    </>
   );
 }

@@ -2,38 +2,52 @@ import { HomePage } from "../screen/HomePage";
 import { CategoryPage } from "../screen/CategoryPage";
 import { ProductPage } from "../screen/ProductPage";
 import { TransactionPage } from "../screen/TransactionPage";
-import { PathProvider, Route } from "../context/PathContext";
 import { ProfilePage } from "../screen/ProfilePage";
 import { ProfileProvider } from "../context/ProfileContext";
 import { ModePage, PageModeProvider } from "../context/PageModeContext";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 export function App() {
+  const queryClient = new QueryClient();
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <HomePage />,
+    },
+    {
+      path: "/home",
+      element: <HomePage />,
+    },
+    {
+      path: "category/",
+      element: <CategoryPage />,
+    },
+    {
+      path: "/product",
+      element: <ProductPage />,
+    },
+    {
+      path: "/transaction",
+      element: <TransactionPage />,
+    },
+    {
+      path: "/profile",
+      element: <ProfilePage />,
+    },
+  ]);
   return (
-    <PathProvider>
+    <ChakraProvider>
       <PageModeProvider>
         <ModePage>
           <ProfileProvider>
-            <Route targetPath="/">
-              <HomePage />
-            </Route>
-            <Route targetPath="/home">
-              <HomePage />
-            </Route>
-            <Route targetPath="/category">
-              <CategoryPage />
-            </Route>
-            <Route targetPath="/product">
-              <ProductPage />
-            </Route>
-            <Route targetPath="/transaction">
-              <TransactionPage />
-            </Route>
-            <Route targetPath="/profile">
-              <ProfilePage />
-            </Route>
+            <QueryClientProvider client={queryClient}>
+              <RouterProvider router={router} />
+            </QueryClientProvider>
           </ProfileProvider>
         </ModePage>
       </PageModeProvider>
-    </PathProvider>
+    </ChakraProvider>
   );
 }

@@ -1,6 +1,5 @@
 import { styled } from "styled-components";
-import { Link } from "./Link";
-import { usePathContext } from "../context/PathContext";
+import { Link } from "react-router-dom";
 
 type SideBarProps = {};
 
@@ -12,31 +11,31 @@ const Div = styled.div`
   }
 `;
 
+const StyledLink = styled(Link)`
+  & {
+    font-family: arial;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+    text-align: center;
+    padding: 20px;
+    transition: background-color 1s;
+    color: inherit;
+  }
+  &:hover {
+    background-color: #004369;
+    color: white;
+  }
+`;
+
 export function SideBar(_props: SideBarProps) {
-  const { setPath } = usePathContext();
   return (
     <Div>
-      <Link pathname="/home" onClick={() => setPath("/home")} label="Home" />
-      <Link
-        pathname="/category"
-        onClick={() => setPath("/category")}
-        label="Category"
-      />
-      <Link
-        pathname="/product"
-        onClick={() => setPath("/product")}
-        label="Product"
-      />
-      <Link
-        pathname="/transaction"
-        onClick={() => setPath("/transaction")}
-        label="Transaction"
-      />
-      <Link
-        pathname="/Profile"
-        onClick={() => setPath("/profile")}
-        label="Profile"
-      />
+      <StyledLink to="/home">Home</StyledLink>
+      <StyledLink to="/category">Category</StyledLink>
+      <StyledLink to="/product">Product</StyledLink>
+      <StyledLink to="/transaction">Transaction</StyledLink>
+      <StyledLink to="/profile">Profile</StyledLink>
     </Div>
   );
 }

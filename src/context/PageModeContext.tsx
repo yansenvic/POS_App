@@ -24,7 +24,7 @@ export const ModePage = ({ children }: { children: React.ReactNode }) => {
   const { darkMode } = usePageMode();
   if (darkMode) {
     return (
-      <div style={{ background: "black", color: "white" }}>{children}</div>
+      <div style={{ background: "#121212", color: "white" }}>{children}</div>
     );
   } else {
     return (

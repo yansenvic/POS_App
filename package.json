@@ -11,9 +11,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chakra-ui/react": "^2.7.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "formik": "^2.4.1",
+    "framer-motion": "^10.12.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "styled-components": "^6.0.0-rc.1"
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.11.2",
+    "styled-components": "^6.0.0-rc.1",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",

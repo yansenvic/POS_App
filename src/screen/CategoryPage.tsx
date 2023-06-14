@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { SideBar } from "../component/SideBar";
 import { Navbar } from "../component/NavBar";
 import {
-  useCreateCategory,
   useDeleteCategory,
   useEditCategory,
-  useFetchCategories,
+  categoryhooks,
 } from "../domain/categories";
 import styled from "styled-components";
 import { Header } from "./HomePage";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 type CategoryPageProps = {};
 
@@ -37,28 +37,39 @@ const defaultInputCategory: CategoryForm = {
 };
 
 export function CategoryPage(_props: CategoryPageProps) {
-  const [inputCategory, setInputCategory] =
-    useState<CategoryForm>(defaultInputCategory);
-  const fetchCategories = useFetchCategories();
-  const createCategory = useCreateCategory();
   const deleteCategory = useDeleteCategory();
   const editCategory = useEditCategory();
+  const mengapa = categoryhooks();
 
-  function onInputCategory(props: CategoryForm) {
+  async function onInputCategory(props: CategoryForm) {
     if (props.type === "add") {
-      createCategory.submit({ title: props.title }).then(() => {
-        setInputCategory(defaultInputCategory);
-        fetchCategories.reFetch();
-      });
+      await mengapa.useCreateCategory.mutate({ title: props.title });
+      await inputCategory.setValues(defaultInputCategory);
+      inputCategory.setErrors({});
+      mengapa.useFetchCategory.refetch();
     } else if (props.type === "edit") {
       editCategory
         .updateCategory({ id: props.selectedId, title: props.title })
-        .then(() => {
-          setInputCategory(defaultInputCategory);
-          fetchCategories.reFetch();
+        .then(async () => {
+          await inputCategory.setValues(defaultInputCategory);
+          inputCategory.setErrors({});
+          mengapa.useFetchCategory.refetch();
         });
     } else return;
   }
+  const inputCategory = useFormik({
+    initialValues: defaultInputCategory,
+    validationSchema: Yup.object({
+      type: Yup.string(),
+      selectedId: Yup.number().nullable(),
+      title: Yup.string()
+        .required("Required")
+        .max(30, "Must be 30 character or less"),
+    }),
+    onSubmit: (values) => {
+      onInputCategory(values);
+    },
+  });
 
   return (
     <div>
@@ -68,52 +79,56 @@ export function CategoryPage(_props: CategoryPageProps) {
         <ContentWrapper>
           <div>
             <Header>Welcome to Category Page</Header>
-            <span>Category Name : </span>
-            <input
-              type="text"
-              id="inputCategory"
-              value={inputCategory.title}
-              onChange={(e) =>
-                setInputCategory({ ...inputCategory, title: e.target.value })
-              }
-            ></input>
-            <input
-              type="button"
-              value={inputCategory.type === "add" ? "Add" : "Update"}
-              disabled={createCategory.isLoading}
-              onClick={() => onInputCategory(inputCategory)}
-            ></input>
-            <input
-              type="button"
-              value={inputCategory.type === "add" ? "Clear Input" : "Cancel"}
-              disabled={createCategory.isLoading}
-              onClick={() => setInputCategory(defaultInputCategory)}
-            ></input>
+            <form onSubmit={inputCategory.handleSubmit}>
+              <label htmlFor="title">Category Name :</label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                onChange={inputCategory.handleChange}
+                onBlur={inputCategory.handleBlur}
+                value={inputCategory.values.title}
+              />
+              {inputCategory.touched.title && inputCategory.errors.title ? (
+                <>
+                  <span>{inputCategory.errors.title}</span>
+                  <br />
+                </>
+              ) : null}
+              <button type="submit">
+                {inputCategory.values.type === "add" ? "Add" : "Update"}
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await inputCategory.setValues(defaultInputCategory);
+                  inputCategory.setErrors({});
+                }}
+              >
+                {inputCategory.values.type === "add" ? "Clear Input" : "Cancel"}
+              </button>
+            </form>
           </div>
           {(function () {
-            if (fetchCategories.isLoading) {
+            if (mengapa.useFetchCategory.isLoading) {
               return <p>Data is Loading</p>;
             } else if (
-              createCategory.errorMessage ||
+              mengapa.useFetchCategory.error ||
               deleteCategory.errorMessage ||
-              editCategory.errorMessage ||
-              fetchCategories.errorMessage
+              editCategory.errorMessage
             ) {
               return (
                 <p>
-                  {createCategory.errorMessage ||
-                    deleteCategory.errorMessage ||
-                    editCategory.errorMessage ||
-                    fetchCategories.errorMessage}
+                  {deleteCategory.errorMessage || editCategory.errorMessage}
                 </p>
               );
-            } else if (fetchCategories.categories.length === 0) {
+            } else if (mengapa.useFetchCategory.data?.length === 0) {
               return <p>Data Empty</p>;
             } else {
               return (
                 <table
                   style={
-                    inputCategory.type === "edit"
+                    inputCategory.values.type === "edit"
                       ? { display: "none" }
                       : { display: "table" }
                   }
@@ -126,7 +141,7 @@ export function CategoryPage(_props: CategoryPageProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {fetchCategories.categories.map((category) => {
+                    {mengapa.useFetchCategory.data?.map((category) => {
                       return (
                         <tr key={category.id}>
                           <td>{category.id}</td>
@@ -142,7 +157,9 @@ export function CategoryPage(_props: CategoryPageProps) {
                                     id: category.id,
                                     title: category.title,
                                   })
-                                  .then(fetchCategories.reFetch)
+                                  .then(() =>
+                                    mengapa.useFetchCategory.refetch()
+                                  )
                               }
                             ></input>
                             <input
@@ -150,7 +167,7 @@ export function CategoryPage(_props: CategoryPageProps) {
                               value="Edit"
                               disabled={editCategory.isLoading}
                               onClick={() => {
-                                setInputCategory({
+                                inputCategory.setValues({
                                   selectedId: category.id,
                                   title: category.title,
                                   type: "edit",

@@ -12,7 +12,7 @@ export const ProfileProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState("Yansen");
   return (
     <ProfileContext.Provider value={{ name, setName }}>
       {children}

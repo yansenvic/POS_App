@@ -1,6 +1,8 @@
 import { SideBar } from "../component/SideBar";
 import { Navbar } from "../component/NavBar";
 import styled from "styled-components";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 type HomePageProps = {};
 
